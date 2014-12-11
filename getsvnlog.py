@@ -2,6 +2,9 @@ import os
 import sys
 import shutil
 import commands
+import re
+
+pattern = re.compile(r'/[-]*r\d* \| [^\|]*\|[^\|]*\|[^\n]*/')
  
 def errExit(msg):
     print "-" * 50
@@ -11,14 +14,21 @@ def errExit(msg):
  
 def main(source_dir):
     print "Get the log from", source_dir
-    mycmd = "cd " + source_dir + ";git log"
-    err, log = commands.getstatusoutput(mycmd)
-    #print "err = ", err
-    #print "log = ", log
+    mycmd = "cd " + source_dir + ";svn log"
+    #err, log = commands.getstatusoutput(mycmd)
+    err = 0
+    log = ""
+    print "err = ", err
+    print "log = ", log
     NextCommitBegin = 0
     AllMsg = []
     if not err:
-        while (NextCommitBegin != -1):    
+ #       while (NextCommitBegin != -1):    
+            match = pattern.match(log)
+            if match:
+                print match.group()
+            
+'''
             CommitBegin = log.find("commit ", NextCommitBegin)
             CommitBodyBegin = CommitBegin + 7
             CommitBodyEnd = CommitBodyBegin + 40
@@ -31,7 +41,7 @@ def main(source_dir):
             Message = {'Commit': Commit,'Body': Body}
             AllMsg.append(Message)
     return AllMsg
-    
+   ''' 
  
 if __name__ == "__main__":
     if len(sys.argv) != 2:
