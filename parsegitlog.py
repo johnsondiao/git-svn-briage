@@ -25,8 +25,4 @@ def ParseGitLog(log):
                 Message = {'commit':commit,'body':commitbody + body}
                 AllMsg.append(Message)
                 OneMessage = False
-    print "============"
-    print AllMsg
     return AllMsg              
-err,log = commands.getstatusoutput("cd ~/gitcentral;git log")
-ParseGitLog(log)

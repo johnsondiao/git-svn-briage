@@ -2,6 +2,7 @@ import os
 import sys
 import shutil
 import commands
+from  parsegitlog import *
  
 def errExit(msg):
     print "-" * 50
@@ -13,23 +14,8 @@ def main(source_dir):
     print "Get the log from", source_dir
     mycmd = "cd " + source_dir + ";git log"
     err, log = commands.getstatusoutput(mycmd)
-    #print "err = ", err
-    #print "log = ", log
-    NextCommitBegin = 0
-    AllMsg = []
-    if not err:
-        while (NextCommitBegin != -1):    
-            CommitBegin = log.find("commit ", NextCommitBegin)
-            CommitBodyBegin = CommitBegin + 7
-            CommitBodyEnd = CommitBodyBegin + 40
-            NextCommitBegin = log.find("commit ", CommitBodyEnd)
-            if NextCommitBegin == -1:
-                Body = log[CommitBegin :]
-            else:
-                Body = log[CommitBegin : NextCommitBegin]
-            Commit = log[CommitBodyBegin : CommitBodyEnd]
-            Message = {'Commit': Commit,'Body': Body}
-            AllMsg.append(Message)
+    AllMsg =  ParseGitLog(log)
+    print AllMsg
     return AllMsg
     
  
