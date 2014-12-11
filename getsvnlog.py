@@ -4,7 +4,7 @@ import shutil
 import commands
 import re
 
-pattern = re.compile(r'/[-]*r\d* \| [^\|]*\|[^\|]*\|[^\n]*/')
+pattern = re.compile(r'[-]*\nr\d* \| [^\|]*\|[^\|]*\|[^\|-]*')
  
 def errExit(msg):
     print "-" * 50
@@ -15,18 +15,17 @@ def errExit(msg):
 def main(source_dir):
     print "Get the log from", source_dir
     mycmd = "cd " + source_dir + ";svn log"
-    #err, log = commands.getstatusoutput(mycmd)
-    err = 0
-    log = ""
-    print "err = ", err
-    print "log = ", log
+    err, log = commands.getstatusoutput(mycmd)
     NextCommitBegin = 0
     AllMsg = []
     if not err:
  #       while (NextCommitBegin != -1):    
-            match = pattern.match(log)
+            match = pattern.findall(log)
             if match:
-                print match.group()
+                print "match[0]:"
+                print match[0]
+                print "match[1]"
+                print match[1]
             
 '''
             CommitBegin = log.find("commit ", NextCommitBegin)
