@@ -23,12 +23,16 @@ def main(source_dir):
             CommitBodyBegin = CommitBegin + 7
             CommitBodyEnd = CommitBodyBegin + 40
             NextCommitBegin = log.find("commit ", CommitBodyEnd)
-            Body = log[CommitBegin : NextCommitBegin]
+            if NextCommitBegin == -1:
+                Body = log[CommitBegin :]
+            else:
+                Body = log[CommitBegin : NextCommitBegin]
             Commit = log[CommitBodyBegin : CommitBodyEnd]
             Message = {'Commit': Commit,'Body': Body}
             AllMsg.append(Message)
-    print "AllMsg=", AllMsg
-
+    print "AllMsg[0]=", AllMsg[0]
+    print "AllMsg[1]=", AllMsg[1]
+    return AllMsg
     
  
 if __name__ == "__main__":
