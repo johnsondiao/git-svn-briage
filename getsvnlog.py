@@ -26,22 +26,7 @@ def main(source_dir):
                 print match[0]
                 print "match[1]"
                 print match[1]
-            
-'''
-            CommitBegin = log.find("commit ", NextCommitBegin)
-            CommitBodyBegin = CommitBegin + 7
-            CommitBodyEnd = CommitBodyBegin + 40
-            NextCommitBegin = log.find("commit ", CommitBodyEnd)
-            if NextCommitBegin == -1:
-                Body = log[CommitBegin :]
-            else:
-                Body = log[CommitBegin : NextCommitBegin]
-            Commit = log[CommitBodyBegin : CommitBodyEnd]
-            Message = {'Commit': Commit,'Body': Body}
-            AllMsg.append(Message)
-    return AllMsg
-   ''' 
- 
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         if "-h" in sys.argv or "--help" in sys.argv:

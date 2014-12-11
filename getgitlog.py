@@ -10,7 +10,7 @@ def errExit(msg):
     print msg
     sys.exit(1)
  
-def main(source_dir):
+def GetGitLog(source_dir):
     print "Get the log from", source_dir
     mycmd = "cd " + source_dir + ";git log"
     err, log = commands.getstatusoutput(mycmd)
@@ -29,4 +29,4 @@ if __name__ == "__main__":
     if os.path.isdir(source_dir) == False:
         errExit(u"'%s' is not a folder!" % source_dir)
  
-    main(source_dir)
+    GetGitLog(source_dir)
