@@ -18,7 +18,6 @@ def GetSvnLog(source_dir):
     mycmd = "cd " + source_dir + ";svn log"
     err, log = commands.getstatusoutput(mycmd)
     AllMsg =  ParseSvnLog(log)
-    print AllMsg
     return AllMsg
 if __name__ == "__main__":
     if len(sys.argv) != 2:

@@ -8,7 +8,7 @@ def errExit(msg):
     print msg
     sys.exit(1)
  
-def main(source_dir, target_dir):
+def SyncDir(source_dir, target_dir):
     print "synchronize '%s' >> '%s'..." % (source_dir, target_dir)
     print "=" * 50
     sync_file_count = 0
@@ -69,4 +69,4 @@ if __name__ == "__main__":
     elif os.path.isdir(target_dir) == False:
         errExit(u"'%s' is not a folder!" % target_dir)
  
-    main(source_dir, target_dir)
+    SyncDir(source_dir, target_dir)
