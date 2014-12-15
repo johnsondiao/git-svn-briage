@@ -6,7 +6,7 @@ from parsegitlog import *
 from iscontainsvnorgitlog import *
 import commands
 import re
-
+import os
 
 def main(svn_dir, git_dir):
 	err, upinfo = commands.getstatusoutput("cd " + svn_dir + ";svn up")
@@ -45,8 +45,10 @@ def main(svn_dir, git_dir):
 	#if err != 0:
 		#print "svn del failed:", SvnDelInfo
 		#return
-
-	CommitCmd = "cd " + svn_dir + ";svn commit -m \"" + SvnCommitLog + "\""
+	fp = open(svn_dir + "/templog.txt", 'w')
+	fp.write(SvnCommitLog);
+	fp.close()
+	CommitCmd = "cd " + svn_dir + ";svn commit -F templog.txt"
 	print "commitcmd:", CommitCmd
 	err, SvnCommitInfo = commands.getstatusoutput(CommitCmd)
 	if err != 0:
