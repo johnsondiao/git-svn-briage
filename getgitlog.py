@@ -15,7 +15,6 @@ def GetGitLog(source_dir):
     mycmd = "cd " + source_dir + ";git log"
     err, log = commands.getstatusoutput(mycmd)
     AllMsg =  ParseGitLog(log)
-    print AllMsg
     return AllMsg
     
  
