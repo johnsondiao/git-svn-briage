@@ -1,5 +1,5 @@
 import re
-
+import pdb
 pattern = re.compile(r'([ ]*[-]*\n[ ]*r\d* \| [^\|]*\|[^\|]*\|[^\|\n]*)')
  
 def ParseSvnLog(log):
@@ -13,10 +13,11 @@ def ParseSvnLog(log):
 	for i in range(len(match)):
 		p = match[i]
 		if IsHead and (p.find("----------") != -1):
-			head = re.search(r'r\d*', p).group()
-			headbody = p
-			IsHead = False
-		elif (IsHead == False) and (p.find("----------") != -1):
+			if re.search(r'r\d*', p) != None:
+				head = re.search(r'r\d*', p).group()
+				headbody = p
+				IsHead = False
+		elif (IsHead == False) and (p.find("----------") == -1):
 			body = p
 			OneMessage = True
 			IsHead = True

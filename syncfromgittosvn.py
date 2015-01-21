@@ -7,7 +7,7 @@ from iscontainsvnorgitlog import *
 import commands
 import re
 import os
-
+import pdb
 def main(svn_dir, git_dir):
 	err, upinfo = commands.getstatusoutput("cd " + svn_dir + ";svn up")
 	if err != 0:
@@ -32,7 +32,17 @@ def main(svn_dir, git_dir):
 		for i in range(0, GitContainSvnHeadIndex):
 			SvnCommitLog = SvnCommitLog + GitLogS[i]['body']
 	else:
-		print "compare commits"
+		GitLogInSvnLog = ParseGitLog(SvnContainGitCommitInfo[0]['body'])
+                FirstGitLogCommit = GitLogInSvnLog[0]['commit']
+		for i in range(0, len(GitLogS)):
+			if FirstGitLogCommit != GitLogS[i]['commit']:
+				SvnCommitLog = SvnCommitLog + GitLogS[i]['body']
+			else:
+				break
+		
+		if SvnCommitLog == '':
+			print "Nothing to commit to Svn"
+	                return
 
 	SyncDir(git_dir, svn_dir)
 
@@ -45,12 +55,14 @@ def main(svn_dir, git_dir):
 	#if err != 0:
 		#print "svn del failed:", SvnDelInfo
 		#return
-	fp = open(svn_dir + "/templog.txt", 'w')
+	fp = open(git_dir + "/.cddiaogitsvntemplogfile.txt", 'w')
 	fp.write(SvnCommitLog);
 	fp.close()
-	CommitCmd = "cd " + svn_dir + ";svn commit -F templog.txt"
+        commands.getstatusoutput("cd " + svn_dir + "; svn add *")        
+	CommitCmd = "cd " + svn_dir + ";svn commit -F " + git_dir + "/.cddiaogitsvntemplogfile.txt"
 	print "commitcmd:", CommitCmd
 	err, SvnCommitInfo = commands.getstatusoutput(CommitCmd)
+        commands.getstatusoutput("cd " + git_dir + ";rm .cddiaogitsvntemplogfile.txt")
 	if err != 0:
 		print "svn commit error"
 		return
@@ -67,6 +79,8 @@ if __name__ == "__main__":
 		errExit(u"invalid arguments!")
 	svn_dir = sys.argv[1]
 	git_dir = sys.argv[2]
+        svn_dir = os.path.abspath(svn_dir)
+        git_dir = os.path.abspath(git_dir)
 	if os.path.isdir(svn_dir) == False:
 		errExit(u"'%s' is not a folder!" % svn_dir)
 	if os.path.isdir(git_dir) == False:
