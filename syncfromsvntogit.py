@@ -74,7 +74,7 @@ def main(svn_dir, git_dir):
 if __name__ == "__main__":
 	if len(sys.argv) != 3:
 		if "-h" in sys.argv or "--help" in sys.argv:
-                        print "syncfromgittosvn svn_dir git_dir"
+                        print "syncfromsvntogit svn_dir git_dir"
 			print __doc__
 			sys.exit(1)
 		errExit(u"invalid arguments!")
