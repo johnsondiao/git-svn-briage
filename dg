@@ -1,0 +1,28 @@
+#!/usr/bin/python
+import argparse
+import sys,os
+from SvnObject import *
+from DgObject import *
+from GitObject import *
+import pdb
+
+LocalPath = os.getcwd()
+parser = argparse.ArgumentParser(description="Dg -- A briage tool between Svn and Git, Help you to work under Git from Svn enviroment")
+
+'''The support commands'''
+parser.add_argument('-i', action='store', help="Init a new workspace")
+parser.add_argument('-s', action='store_true', help="Sync the local workspace and dg")
+args = parser.parse_args()
+if args.i:
+	print "Get --init ", args.i
+	Dg = DgObject()
+	Dg.Create(LocalPath)
+	Dg.Init(args.i)
+	WorkGit = GitObject(LocalPath)
+	WorkGit.Pull(Dg.GitObjectPath)
+if args.s:
+	print "Get sync"
+	Dg = DgObject()
+	Dg.Sync()
+	
+

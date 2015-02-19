@@ -17,8 +17,12 @@ def ParseSvnLog(log):
 				head = re.search(r'r\d*', p).group()
 				headbody = p
 				IsHead = False
-		elif (IsHead == False) and (p.find("----------") == -1):
+		elif i != len(match) and (IsHead == False) and (p.find("----------") == -1):
 			body = p
+			OneMessage = True
+			IsHead = True
+		elif (IsHead == False) and i == (len(match) - 1):
+			body = p.split('\n---')[0]
 			OneMessage = True
 			IsHead = True
 		if OneMessage:
