@@ -47,7 +47,7 @@ class DgObject:
 		self.GitObject.Add();
 		if False == self.GitObject.Commit(self.SvnObject.Logs):
 			return False
-	def Sync(self):
+	def SyncFromSvn(self):
 		'''first sync from svn to dg's git '''
 		if False == self.SvnObject.Update():
 			print "Svn Upload Failed"
@@ -63,3 +63,19 @@ class DgObject:
 				return False
 			os.remove(patchfile)
 				
+	def PushToSvn(self):
+		'''push to svn from dg's git'''
+		while False == self.GitObject.IsNewest():
+			err, patchfile,patchlog = self.GitObject.CreatePatchOneVersion(self.Path)
+			if False == err:
+				print "Create patch Failed:"
+				return False
+			err = self.SvnObject.ApplyPatch(patchfile)
+			if False == err:
+				print "Apply patch Failed"
+				return False
+			err = self.SvnObject.Commit(patchlog)
+			if False == err:
+				print "Commit Failed"
+				return False
+			os.remove(patchfile)	

@@ -20,7 +20,7 @@ class SvnObject:
 			self.Path = path
 			self.CmdPath = "cd " + self.Path + "; "
 			if False == self.FreshLog():
-				return False
+				return 
 			self.LastVersion = self.LogList[0]['head'][:]
 		else:
 			print "This is not a svn workspace"
@@ -94,3 +94,26 @@ class SvnObject:
 		self.LastVersion = OneStepVersion
 		return True, patchfile, self.LogList[OneStepIndex]['body']
 		
+	def ApplyPatch(self, patchfile):
+		mycmd = self.CmdPath + "patch -p0 <" + patchfile
+		err, ret = commands.getstatusoutput(mycmd)
+		if 0 != err:
+			print ret
+			return False
+		return True
+	def Commit(self, log):
+		mycmd = self.CmdPath + r'svn commit -m "' + log + r'"'
+		err, ret = commands.getstatusoutput(mycmd)
+		if 0!= err:
+			print "Failed to Commit svn log"
+			return False
+		mycmd = self.CmdPath + "svn update"
+		err, ret = commands.getstatusoutput(mycmd)
+		if 0 != err:
+			print "Failed to update svn"
+			return False
+		if False == self.FreshLog():
+			return False
+		self.LastVersion = self.LogList[0]['head'][:]
+		return True
+	

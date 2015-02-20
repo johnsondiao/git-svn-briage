@@ -11,7 +11,8 @@ parser = argparse.ArgumentParser(description="Dg -- A briage tool between Svn an
 
 '''The support commands'''
 parser.add_argument('-i', action='store', help="Init a new workspace")
-parser.add_argument('-s', action='store_true', help="Sync the local workspace and dg")
+parser.add_argument('-s', action='store_true', help="update from svn")
+parser.add_argument('-p', action='store_true', help="push changes to svn from loack workspace")
 args = parser.parse_args()
 if args.i:
 	print "Get --init ", args.i
@@ -26,6 +27,12 @@ if args.i:
 if args.s:
 	print "Get sync"
 	Dg = DgObject(LocalPath + "/.dg")
-	Dg.Sync()
-	
-
+	Dg.SyncFromSvn()
+	WorkGit = GitObject(LocalPath + "/git")
+	WorkGit.Pull(Dg.GitObject.Path)
+if args.p:
+	print "Get push"
+	Dg = DgObject(LocalPath + "/.dg")
+	if False == Dg.GitObject.Pull(LocalPath + "/git"):
+		quit()
+	Dg.PushToSvn()
