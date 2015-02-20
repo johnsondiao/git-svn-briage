@@ -16,13 +16,16 @@ args = parser.parse_args()
 if args.i:
 	print "Get --init ", args.i
 	Dg = DgObject()
-	Dg.Create(LocalPath)
-	Dg.Init(args.i)
-	WorkGit = GitObject(LocalPath)
+	if False == Dg.Create(LocalPath, args.i):
+		print "Create Dg workspace Failed"
+		quit()
+
+	WorkGit = GitObject()
+	WorkGit.Create(LocalPath)
 	WorkGit.Pull(Dg.GitObjectPath)
 if args.s:
 	print "Get sync"
-	Dg = DgObject()
+	Dg = DgObject(LocalPath + "/.dg")
 	Dg.Sync()
 	
 

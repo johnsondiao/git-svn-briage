@@ -9,19 +9,32 @@ class SvnObject:
 	LogList = ""
         CmdPah = ""
 	LastVersion = ""
-	def __init__(self, path, url):
-		if False == self.IsValidPath(path):
-			return False
-		if False == self.Checkout(url):
-			return False
-	def IsValidPath(self, path):
+	def __init__(self, path = None):
+		'''the path has svn'''	
+		if path == None:
+			return
 		if os.path.isdir(path) == False:
+			print "This is not a folder"
+			return
+		if path[-3:] == "svn":
+			self.Path = path
+			self.CmdPath = "cd " + self.Path + "; "
+			if False == self.FreshLog():
+				return False
+			self.LastVersion = self.LogList[0]['head'][:]
+		else:
+			print "This is not a svn workspace"
+	def Create(self, path, url):
+		'''the path is the parent of svn workspace'''
+		if os.path.isdir(path) == False:
+			print "This is not a folder"
 			return False
-		if os.path.exists(path + "/.svn"):
+		if os.path.exists(path + "/svn"):
+			print "This is already a svn workspace"
 			return False
-		self.Path = path
+		os.mkdir(path + "/svn")
+		self.Path = path + "/svn"
 		self.CmdPath = "cd " + self.Path + "; "
-	def Checkout(self, url):
 		mycmd = self.CmdPath + "svn checkout " + url + " " + self.Path;
 		print "Checkout svn from ", url, " to ", self.Path 
 		err, ret = commands.getstatusoutput(mycmd)
@@ -30,7 +43,7 @@ class SvnObject:
 			return False
 		if False == self.FreshLog():
 			return False
-		self.LastVersion = self.LogList[0]['head'][1:]
+		self.LastVersion = self.LogList[0]['head'][:]
 		return True
 	def FreshLog(self):
 		mycmd = self.CmdPath + "svn log"
@@ -41,24 +54,43 @@ class SvnObject:
 		self.Logs = ret
 		self.LogList = ParseSvnLog(self.Logs)
 		return True	
-	def Upload(self):
-		mycmd = self.CmdPath + r'svn upload'
+	def Update(self):
+		mycmd = self.CmdPath + r'svn update'
 		err, ret = commands.getstatusoutput(mycmd)
 		if 0 != err:
-			print "Svn upload Failed"
+			print "Svn upload Failed ret", ret
 			return False
 		else:
 			if False == self.FreshLog():
 				return False
 			return True
 		return False
-	def GotNew(self):
-		newversion = self.LogList[0]['head'][1:]
-		if newversion == self.LastVersion:
+	def IsNewest(self):
+		if False == self.FreshLog():
+			print "Get Log Failed"
+			return 
+
+		self.NewVersion = self.LogList[0]['head'][:]
+		if self.NewVersion == self.LastVersion:
 			print "The Svn is the Newest"
-			return False
-		else:
-			self.LastVersion = newversion
 			return True
-		
+		else:
+			return False
+	def CreatePatchOneVersion(self, path):
+		OneStepIndex = 0
+		for index in range(len(self.LogList)):
+			print "index ", index
+			if self.LogList[index]['head'] == self.LastVersion:
+				break;
+			OneStepIndex = index
+		OneStepVersion = self.LogList[OneStepIndex]['head']
+		patchfile = path + "/" + self.LastVersion + "_" + OneStepVersion + ".patch"
+
+		mycmd = self.CmdPath + "svn diff -r " + self.LastVersion[1:] + ":" + OneStepVersion[1:] + ">" + patchfile
+		err, ret = commands.getstatusoutput(mycmd)
+		if 0!=err:
+			print "Create path Failed:", ret
+			return False, None
+		self.LastVersion = OneStepVersion
+		return True, patchfile, self.LogList[OneStepIndex]['body']
 		
