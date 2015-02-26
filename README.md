@@ -2,9 +2,9 @@
 
 DO NOT USE this tool.
 
-This tool is under very very early develop.
+This tool is undeveloped.
 
-I need to test the case blew:
+I need to test the case below:
 
 1.dg -s : the svn repo has new file added
 
