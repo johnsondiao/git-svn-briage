@@ -6,7 +6,17 @@ from DgObject import *
 from GitObject import *
 import pdb
 
+def FindLocalPath(LocalPath):
+	for i in range(0, 1000):
+		dgrepo = LocalPath + "/.dg"
+		if os.path.exists(dgrepo):
+			break
+		else:
+			LocalPath = os.path.abspath(os.path.join(LocalPath, os.path.pardir))
+	return LocalPath
+
 LocalPath = os.getcwd()
+
 parser = argparse.ArgumentParser(description="Dg -- A briage tool between Svn and Git, Help you to work under Git from Svn enviroment")
 
 '''The support commands'''
@@ -22,17 +32,19 @@ if args.i:
 		quit()
 
 	WorkGit = GitObject()
-	WorkGit.Create(LocalPath)
+	WorkGit.Create(LocalPath, name = "codes")
 	WorkGit.Pull(Dg.GitObjectPath)
+else:
+	LocalPath = FindLocalPath(LocalPath)
 if args.s:
 	print "Get sync"
 	Dg = DgObject(LocalPath + "/.dg")
 	Dg.SyncFromSvn()
-	WorkGit = GitObject(LocalPath + "/git")
+	WorkGit = GitObject(LocalPath + "/codes", "codes")
 	WorkGit.Pull(Dg.GitObject.Path)
 if args.p:
 	print "Get push"
 	Dg = DgObject(LocalPath + "/.dg")
-	if False == Dg.GitObject.Pull(LocalPath + "/git"):
+	if False == Dg.GitObject.Pull(LocalPath + "/codes"):
 		quit()
 	Dg.PushToSvn()

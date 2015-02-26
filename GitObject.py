@@ -8,15 +8,18 @@ class GitObject:
 	Path = ""
 	Logs = ""
 	LogList = ""
-        CmdPah = ""
-	def __init__(self, path = None):
-		'''this path has git'''
+        CmdPath = ""
+	Name = ""
+	def __init__(self, path = None, name = None):
+		'''this path include the folder name'''
+		if name == None:
+			name = "/git"
 		if path == None:
 			return
 		if False == os.path.isdir(path):
 			print "This is not a folder"
 			return
-		if path[-3:] == "git":
+		if path[-len(name):] == name:
 			self.Path = path
 			self.CmdPath = "cd " + self.Path + "; "
 			if False == self.FreshLog():
@@ -24,16 +27,20 @@ class GitObject:
 			self.LastVersion = self.LogList[0]['commit'][:]
 		else:
 			print "There is no git workspace"
-	def Create(self, path):
+	def Create(self, path, name = None):
 		'''This path is the parent path of git workspace'''
+		if name == None:
+			self.Name = "/git"
+		else:
+			self.Name = "/" + name
 		if False == os.path.isdir(path):
 			print "This is not a folder"
 			return False
-		if os.path.exists(path + "/git"):
-			print "This is already a git workspace"
+		if os.path.exists(path + self.Name):
+			print "This is already a git workspace, path + self.Name =", path+self.Name
 			return False
-		os.mkdir(path + "/git")
-		self.Path = path + "/git"
+		os.mkdir(path + self.Name)
+		self.Path = path + self.Name
 		self.CmdPath = "cd " + self.Path + "; "
 		mycmd = self.CmdPath + "git init"
 		err, ret = commands.getstatusoutput(mycmd)

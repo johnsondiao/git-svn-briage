@@ -14,13 +14,12 @@ class DgObject:
 			return
 		if False == os.path.isdir(path):
 			print "This is not a folder"
-			pdb.set_trace()
 			return
 		if path[-3:] == ".dg":
 			self.Path = path
 			self.SvnObjectPath = self.Path + "/svn"
 			self.GitObjectPath = self.Path + "/git"
-			self.GitObject = GitObject(self.GitObjectPath)
+			self.GitObject = GitObject(self.GitObjectPath, "git")
 			self.SvnObject = SvnObject(self.SvnObjectPath)
 		else:
 			print "There is no .dg under path", path
@@ -31,7 +30,7 @@ class DgObject:
 			print "This is not a folder"
 			return False
 		if os.path.exists(path + "/.dg"):
-			print "This is already a Dg workspace"
+			print "This is already a Dg workspace, path = ", path
 			return False
 		os.mkdir(path + "/.dg")
 		self.Path = path + "/.dg"
@@ -39,7 +38,7 @@ class DgObject:
 		if False == self.SvnObject.Create(self.Path, url):
 			return False
 		self.GitObject = GitObject()
-		if False == self.GitObject.Create(self.Path):
+		if False == self.GitObject.Create(self.Path, "git"):
 			return False
 		self.SvnObjectPath = self.SvnObject.Path
 		self.GitObjectPath = self.GitObject.Path
