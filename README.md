@@ -6,7 +6,7 @@ This tool is undeveloped.
 
 I need to test the case below:
 
-1.dg -s : the svn repo has new file added
+1.dg -s : the svn repo has new file added  -- pass
 
 2.dg -s : the svn repo delete files
 

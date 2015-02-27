@@ -14,7 +14,6 @@ def FindLocalPath(LocalPath):
 		else:
 			LocalPath = os.path.abspath(os.path.join(LocalPath, os.path.pardir))
 	return LocalPath
-
 LocalPath = os.getcwd()
 
 parser = argparse.ArgumentParser(description="Dg -- A briage tool between Svn and Git, Help you to work under Git from Svn enviroment")

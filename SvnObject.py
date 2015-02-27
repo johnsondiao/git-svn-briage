@@ -7,8 +7,8 @@ class SvnObject:
 	Path = ""
 	Logs = ""
 	LogList = ""
-        CmdPah = ""
-	LastVersion = ""
+	CmdPah = ""
+	LastVersionFile = "/.svnlastversion.txt"
 	def __init__(self, path = None):
 		'''the path has svn'''	
 		if path == None:
@@ -19,11 +19,37 @@ class SvnObject:
 		if path[-3:] == "svn":
 			self.Path = path
 			self.CmdPath = "cd " + self.Path + "; "
-			if False == self.FreshLog():
-				return 
-			self.LastVersion = self.LogList[0]['head'][:]
+			self.GetLastVersion()
 		else:
 			print "This is not a svn workspace"
+	def GetLastVersion(self):
+		if self.Path != "":
+			if os.path.exists(self.Path + self.LastVersionFile):
+				versionfile = open(self.Path + self.LastVersionFile, "r")	
+				LastVersion = versionfile.read()
+				versionfile.close()
+				if LastVersion[-1:] == '\n':
+					LastVersion = LastVersion[:-1]
+				return LastVersion
+			else:
+				if False == self.FreshLog():
+					print "GetLastVersion Failed @ fresh log failed"
+					return False
+				else:
+					self.WriteLastVersion(self.LogList[0]['head'][:])
+					return self.LogList[0]['head'][:]
+		else:
+			print "GetLastVersion Failed @ no last version file"
+			return False
+	def WriteLastVersion(self, lastversion):
+		if self.Path != "":
+			versionfile = open(self.Path + self.LastVersionFile, "w")
+			versionfile.write(lastversion)
+			versionfile.close()		
+			return True
+		else:
+			print "WriteLastVersion Failed"
+			return False
 	def Create(self, path, url):
 		'''the path is the parent of svn workspace'''
 		if os.path.isdir(path) == False:
@@ -43,7 +69,7 @@ class SvnObject:
 			return False
 		if False == self.FreshLog():
 			return False
-		self.LastVersion = self.LogList[0]['head'][:]
+		self.WriteLastVersion(self.LogList[0]['head'][:])
 		return True
 	def FreshLog(self):
 		mycmd = self.CmdPath + "svn log"
@@ -71,7 +97,7 @@ class SvnObject:
 			return 
 
 		self.NewVersion = self.LogList[0]['head'][:]
-		if self.NewVersion == self.LastVersion:
+		if self.NewVersion == self.GetLastVersion():
 			print "The Svn is the Newest"
 			return True
 		else:
@@ -79,19 +105,18 @@ class SvnObject:
 	def CreatePatchOneVersion(self, path):
 		OneStepIndex = 0
 		for index in range(len(self.LogList)):
-			print "index ", index
-			if self.LogList[index]['head'] == self.LastVersion:
+			if self.LogList[index]['head'] == self.GetLastVersion():
 				break;
 			OneStepIndex = index
 		OneStepVersion = self.LogList[OneStepIndex]['head']
-		patchfile = path + "/" + self.LastVersion + "_" + OneStepVersion + ".patch"
+		patchfile = path + "/" + self.GetLastVersion() + "_" + OneStepVersion + ".patch"
 
-		mycmd = self.CmdPath + "svn diff -r " + self.LastVersion[1:] + ":" + OneStepVersion[1:] + ">" + patchfile
+		mycmd = self.CmdPath + "svn diff -r " + self.GetLastVersion()[1:] + ":" + OneStepVersion[1:] + ">" + patchfile
 		err, ret = commands.getstatusoutput(mycmd)
 		if 0!=err:
 			print "Create path Failed:", ret
 			return False, None
-		self.LastVersion = OneStepVersion
+		self.WriteLastVersion(OneStepVersion)
 		return True, patchfile, self.LogList[OneStepIndex]['body']
 		
 	def ApplyPatch(self, patchfile):
@@ -114,6 +139,6 @@ class SvnObject:
 			return False
 		if False == self.FreshLog():
 			return False
-		self.LastVersion = self.LogList[0]['head'][:]
+		self.WriteLastVersion(self.LogList[0]['head'][:])
 		return True
 	

@@ -88,6 +88,8 @@ class GitObject:
 		commands.getstatusoutput(mycmd)
 		return True
 	def Commit(self, log):
+		self.Add()
+		print "git commit ", log
 		mycmd = self.CmdPath + r'git commit -a -m "' + log + r'"'
 		err, ret = commands.getstatusoutput(mycmd)
 		if 0 != err:
