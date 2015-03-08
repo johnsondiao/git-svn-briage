@@ -111,7 +111,7 @@ class SvnObject:
 		OneStepVersion = self.LogList[OneStepIndex]['head']
 		patchfile = path + "/" + self.GetLastVersion() + "_" + OneStepVersion + ".patch"
 
-		mycmd = self.CmdPath + "svn diff -r " + self.GetLastVersion()[1:] + ":" + OneStepVersion[1:] + ">" + patchfile
+		mycmd = self.CmdPath + "svn diff --git -r " + self.GetLastVersion()[1:] + ":" + OneStepVersion[1:] + ">" + patchfile
 		err, ret = commands.getstatusoutput(mycmd)
 		if 0!=err:
 			print "Create path Failed:", ret

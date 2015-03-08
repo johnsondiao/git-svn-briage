@@ -56,6 +56,7 @@ class DgObject:
 			if False == err:
 				print "Create patch Failed"
 				return False
+			pdb.set_trace()
 			err = self.GitObject.ApplyPatch(patchfile, patchlog)
 			if False == err:
 				print "Apply patch Failed"
